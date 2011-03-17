@@ -23,6 +23,7 @@
 import Source
 import Chemical_Sink
 import Inbox
+
 from threading import Thread
 from Transport import Transport
 
@@ -54,23 +55,13 @@ class Box:
 		
 		self.inboxes = [];
 		for _ in range(6):
-			self.inboxes.append(Inbox.Inbox(('state', 'change')))
+			self.inboxes.append(Inbox.LocalInbox())
 		self.up_inbox = self.inboxes[0]
 		self.down_inbox = self.inboxes[1]
 		self.left_inbox = self.inboxes[2]
 		self.right_inbox = self.inboxes[3]
 		self.front_inbox = self.inboxes[4]
 		self.back_inbox = self.inboxes[5]
-
-		self.outboxes = []
-		for _ in range(6):
-			self.outboxes.append(None)
-		self.up_outbox = self.outboxes[0]
-		self.down_outbox = self.outboxes[1]
-		self.left_outbox = self.outboxes[2]
-		self.right_outbox = self.outboxes[3]
-		self.front_outbox = self.outboxes[4]
-		self.back_outbox = self.outboxes[5]
 		
 		self.sources_list = ()
 		self.sink_list = ()
@@ -104,9 +95,6 @@ class Box:
 		self.channels.append((self.right_inbox, self.right_outbox))
 
 	def connect_up(self, neighbor):
-		'''
-		specify left neighbor
-		'''
 		self.up_outbox = neighbor.down_inbox
 		neighbor.down_outbox = self.up_inbox
 		self.channels.append((self.up_inbox, self.up_outbox))
@@ -249,9 +237,13 @@ class Box:
 			else:
 				# The current implementation requires we always notify our neighbor, even if nothing changes
 				outbox.put('change', Transport(0)) 
-			
+			print "Taking"
 			self.terpene_concentration += inbox.take('change').terpene_concentration
 				
 		print "Done doing calc"
 
+
+	
+
+		
 		
