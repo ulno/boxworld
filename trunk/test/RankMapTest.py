@@ -68,6 +68,30 @@ class RankMapTest(unittest.TestCase):
         self.assertEqual(rMap.getRank(Coord(1,1,0)), 0)
         self.assertEqual(rMap.getRank(Coord(1,1,1)), 1)
     
+    def testGenerateLong(self):
+        '''
+        Assert split for short long world occurs along X axis
+        '''
+        
+        rMap = self.rankMapGen.generate(2, Dimensions(100, 4, 4))
+        
+        self.assertEqual(rMap.getRank(Coord(0,0,0)), 0)
+        self.assertEqual(rMap.getRank(Coord(49,3,3)), 0)
+        
+        self.assertEqual(rMap.getRank(Coord(99,0,0)), 1)
+        self.assertEqual(rMap.getRank(Coord(50,3,3)), 1)
+        
+    def testGenerateTall(self):
+        '''
+        Assert split for skinny tall world occurs along Z axis
+        '''
+        rMap = self.rankMapGen.generate(2, Dimensions(4, 4, 100))
+        
+        self.assertEqual(rMap.getRank(Coord(0,0,0)), 0)
+        self.assertEqual(rMap.getRank(Coord(3,3,49)), 0)
+        
+        self.assertEqual(rMap.getRank(Coord(0,0,99)), 1)
+        self.assertEqual(rMap.getRank(Coord(3,3,50)), 1)
 
 if __name__ == '__main__':
     unittest.main()
