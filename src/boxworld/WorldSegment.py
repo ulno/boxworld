@@ -1,5 +1,6 @@
 import re
 from .Source import Source
+from .Chemical_Sink import Chemical_Sink
 
 class WorldSegmentFactory:
     
@@ -23,6 +24,8 @@ class WorldSegmentFactory:
     TIME_DELTA_REGEX = "time_delta\s+(\d+)" + COMMENT_REGEX
     
     SOURCE_REGEX = "(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
+    
+    SINK_REGEX = "(\d+),(\d+),(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
 
     #Parse States
     PARSE_WORLD_SETTING = 'parseWorldSetting'
@@ -56,6 +59,15 @@ class WorldSegmentFactory:
             else:
                 raise Exception("Could not parse line='%s'" % line)
             
+    def parseSink(self, line):        
+        m = re.match(self.SINK_REGEX, line)
+        if not m:
+            raise Exception("Illegal source syntax in line = '%s'" % line)
+        
+        self.sinks.append(Chemical_Sink(int(m.group(1)), int(m.group(2)), int(m.group(3)), 
+                                   int(m.group(4)), int(m.group(5))))
+    
+    
     def parseChangeState(self, line):
         '''
         Change state and return True if state change. 
