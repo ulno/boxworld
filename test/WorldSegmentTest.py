@@ -16,6 +16,10 @@ class WorldSegementTest(unittest.TestCase):
         self.assertEqual(factory.timeStart, 0)
         self.assertEqual(factory.timeEnd, 1000)
         self.assertEqual(factory.timeDelta, 1)
+        
+        self.assertEqual(len(factory.sources), 3)
+        self.assertEqual(len(factory.sinks), 0)
+        self.assertEqual(len(factory.boxes), 0)
 
 if __name__ == '__main__':
     unittest.main()
