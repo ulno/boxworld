@@ -35,6 +35,9 @@ class WorldSegementTest(unittest.TestCase):
         self.assertEqual(factory.sinks[1].nox,1)
         self.assertEqual(factory.sinks[1].oh, 4)
         
+        self.assertEqual(len(factory.lightFuncs), 2)
+        self.assertEqual(len(factory.tempFuncs), 2)
+        
         self.assertEqual(len(factory.boxes), 8)
 
 if __name__ == '__main__':
