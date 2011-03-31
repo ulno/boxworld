@@ -4,6 +4,8 @@ from .Chemical_Sink import Chemical_Sink
 from .Geometry import Dimensions
 from .Geometry import Coord
 from .Box import Box
+from .RankMap import RankMapGenerator
+
 
 class WorldSegmentFactory:
     
@@ -20,6 +22,8 @@ class WorldSegmentFactory:
         self.tempFuncs = {}
 
         self.importFromFile()
+        
+        self.rankMap = RankMapGenerator().generate(self.worldSize, self.dimensions)
 
     COMMENT_REGEX = "\s*(#.*)?$" #defined as optional
     EMPTY_LINE_REGEX = COMMENT_REGEX
@@ -171,18 +175,30 @@ class WorldSegmentFactory:
         
     def getWorldSegment(self, rank):
         assert rank >= 0 and rank < self.worldSize
+        segment = self.rankMap.getSegment(rank)
+        boxes = []
+        for coord in segment.coorditer():
+            boxes.append(self.boxes[coord.z*self.dimensions.x*self.dimensions.y + 
+                                    coord.y * self.dimensions.x +
+                                    coord.x - 1])
 
-
+        return WorldSegment(rank, self.worldSize, segment, boxes)
 
 class WorldSegment:
+    '''
+    A 3D rectangular collection of connected boxes within the world.
+    '''
     
-    def __init__(self, rank, worldSize, boxes):
-        assert rank > worldSize
+    def __init__(self, rank, worldSize, segment, boxes):
+        assert rank < worldSize, "%d not < %d" % (rank, worldSize)
         assert len(boxes) > 0
         
         self.rank = rank
         self.worldSize = worldSize
         self.boxes = boxes
+        self.segment = segment
+        
+        #TODO wire the local boxes together, and wire local with remote boxes.
     
     def run(self):
         

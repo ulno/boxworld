@@ -39,6 +39,11 @@ class WorldSegementTest(unittest.TestCase):
         self.assertEqual(len(factory.tempFuncs), 2)
         
         self.assertEqual(len(factory.boxes), 8)
+        
+        for rank in range(4):
+            segment = factory.getWorldSegment(0)
+            self.assertNotEqual(segment, None)
+            self.assertEqual(len(segment.boxes), 2)
 
 if __name__ == '__main__':
     unittest.main()
