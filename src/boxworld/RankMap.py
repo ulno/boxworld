@@ -4,7 +4,7 @@ Created on Mar 21, 2011
 @author: willmore
 '''
 
-from Coord import Coord
+from Geometry import Coord
 
 class Split:
     
@@ -64,15 +64,7 @@ class RankMapGenerator:
                 dimensions.x * dimensions.z * (yCount-1)  
                    
 
-class Dimensions:
-    
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-        
-    def __str__(self):    
-        return "[x=%d y=%d z=%d]" % (self.x, self.y, self.z)
+
 
 class Segment:
     '''

@@ -1,11 +1,10 @@
 import unittest
 from boxworld.RankMap import RankMapGenerator
-from boxworld.Coord import Coord
-from boxworld.RankMap import Dimensions
+from boxworld.Geometry import Coord
+from boxworld.Geometry import Dimensions
 from boxworld.RankMap import RankMap
 from boxworld.RankMap import Split
 from boxworld.RankMap import Segment
-from boxworld.Coord import Coord
 
 class RankMapTest(unittest.TestCase):
 

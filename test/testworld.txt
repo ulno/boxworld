@@ -1,0 +1,13 @@
+#Test World 1
+
+time_start 0
+time_end 1000
+time_delta 1
+
+sources_start
+#light, temp, base emission
+3,5,10
+5,4,10
+4,5,12
+
+sources_end
