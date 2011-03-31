@@ -4,10 +4,25 @@ time_start 0
 time_end 1000
 time_delta 1
 
+world_x = 2
+world_y = 2
+world_z = 2
+
+
 sources_start
 #light, temp, base emission
 3,5,10
 5,4,10
 4,5,12
-
 sources_end
+
+sinks_start
+# terpene_concentration, temperature, ozone, nox, oh
+5,1,3,4,1
+7,4,5,1,4
+4,8,1,3,5
+sinks_end
+
+boxes_start
+
+boxes_end

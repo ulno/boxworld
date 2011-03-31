@@ -18,7 +18,19 @@ class WorldSegementTest(unittest.TestCase):
         self.assertEqual(factory.timeDelta, 1)
         
         self.assertEqual(len(factory.sources), 3)
-        self.assertEqual(len(factory.sinks), 0)
+        self.assertEqual(factory.sources[1].light, 5)
+        self.assertEqual(factory.sources[1].temperature, 4)
+        self.assertEqual(factory.sources[1].e0, 10)
+        
+        self.assertEqual(len(factory.sinks), 3)
+        7,4,5,1,4
+        
+        self.assertEqual(factory.sinks[1].terpene_concentration,7)
+        self.assertEqual(factory.sinks[1].temperature, 277.15)
+        self.assertEqual(factory.sinks[1].ozone, 5)
+        self.assertEqual(factory.sinks[1].nox,1)
+        self.assertEqual(factory.sinks[1].oh, 4)
+        
         self.assertEqual(len(factory.boxes), 0)
 
 if __name__ == '__main__':
