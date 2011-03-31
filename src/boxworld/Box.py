@@ -19,9 +19,6 @@
 # The box needs a volume, then all boxes will have a unit of concentration as the sources and
 # sinks release a chemical per time and we have a timestep then is multiplicative!
 #
-
-import Source
-import Chemical_Sink
 import Inbox
 
 from threading import Thread

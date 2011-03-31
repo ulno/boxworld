@@ -94,6 +94,12 @@ class Segment:
                self.endCoord.x >= coord.x and \
                self.endCoord.y >= coord.y and \
                self.endCoord.z >= coord.z
+               
+    def coorditer(self):
+        for x in range(self.startCoord.x, self.endCoord.x+1):
+            for y in range(self.startCoord.y, self.endCoord.y+1):
+                for z in range(self.startCoord.z, self.endCoord.z+1):
+                    yield Coord(x, y, z)
 
 class RankMap:
     
@@ -135,6 +141,11 @@ class RankMap:
     
     def entries(self):
         return self.rMap.items()
+    
+    def getSegment(self, rank):
+        
+        assert self.rMap.has_key(rank), "Input rank %d out of bounds (0, %d]" % (rank, len(self.rMap))
+        return self.rMap[rank]
     
     def getRank(self, coords):
         '''
