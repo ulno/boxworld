@@ -31,7 +31,7 @@ temperature_function tf lambda time: time**2
 temperature_function tf2 lambda time: time // 2
 
 boxes_start
-#initial_terpene
+#initial_terpene, light_function, time_function
 1,lf,tf
 2,lf,tf
 300,lf,tf
