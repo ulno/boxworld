@@ -16,6 +16,8 @@ class WorldSegmentFactory:
         self.sources = []
         self.sinks = []
         self.boxes = []
+        self.lightFuncs = {}
+        self.tempFuncs = {}
 
         self.importFromFile()
 
@@ -27,12 +29,14 @@ class WorldSegmentFactory:
     CUBE_SIZE_REGEX = "cube_size\s+(\d+)" + COMMENT_REGEX
     DIMENSIONS_REGEX = "dimensions\s+(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
     
+    LIGHT_FUNC_REGEX = "light_function\s+(\w+)\s+(lambda.+)"
+    TEMP_FUNC_REGEX = "temperature_function\s+(\w+)\s+(lambda.+)"
     
     SOURCE_REGEX = "(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
     
     SINK_REGEX = "(\d+),(\d+),(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
 
-    BOX_REGEX = "(\d+)\s*" + COMMENT_REGEX
+    BOX_REGEX = "(\d+),(\w+),(\w+)\s*" + COMMENT_REGEX
 
     #Parse States
     PARSE_WORLD_SETTING = 'parseWorldSetting'
@@ -73,8 +77,8 @@ class WorldSegmentFactory:
         if not m:
             raise Exception("Illegal Box syntax in line = '%s'" % line)
     
-        tempFunc = lambda x: 1
-        lightFunc = lambda x: 1
+        tempFunc = self.tempFuncs[m.group(3)]
+        lightFunc = self.lightFuncs[m.group(2)]
         
         self.boxes.append(Box(self.currentCoord, self.cubeSize, lightFunc, 
                               tempFunc,self.timeDelta, self.timeStart, 
@@ -153,6 +157,16 @@ class WorldSegmentFactory:
         m = re.match(self.DIMENSIONS_REGEX, line)
         if m:
             self.dimensions = Dimensions(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            return
+        
+        m = re.match(self.LIGHT_FUNC_REGEX, line)
+        if m:
+            self.lightFuncs[m.group(1)] = eval(m.group(2))
+            return
+        
+        m = re.match(self.TEMP_FUNC_REGEX, line)
+        if m:
+            self.tempFuncs[m.group(1)] = eval(m.group(2))
             return
         
     def getWorldSegment(self, rank):

@@ -24,14 +24,20 @@ sinks_start
 4,8,1,3,5
 sinks_end
 
+light_function lf lambda x: x + 1
+light_function lf2 lambda x: x + 2
+
+temperature_function tf lambda time: time**2
+temperature_function tf2 lambda time: time // 2
+
 boxes_start
 #initial_terpene
-1
-2
-300
-2
-3
-4
-6
-8
+1,lf,tf
+2,lf,tf
+300,lf,tf
+2,lf,tf
+3,lf,tf
+4,lf,tf
+6,lf,tf
+8,lf2,tf2
 boxes_end
