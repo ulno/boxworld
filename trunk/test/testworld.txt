@@ -4,9 +4,10 @@ time_start 0
 time_end 1000
 time_delta 1
 
-world_x = 2
-world_y = 2
-world_z = 2
+# x,y,z
+dimensions 2,2,2
+
+cube_size 1 #1 meter cubed
 
 
 sources_start
@@ -24,5 +25,13 @@ sinks_start
 sinks_end
 
 boxes_start
-
+#initial_terpene
+1
+2
+300
+2
+3
+4
+6
+8
 boxes_end
