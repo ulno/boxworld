@@ -2,6 +2,9 @@ import unittest
 from boxworld.WorldSegement import WorldSegment
 from boxworld.WorldSegment import WorldSegmentFactory
 from boxworld.Geometry import Dimensions
+from boxworld.Geometry import Segment
+from boxworld.Geometry import Coord
+
 
 class WorldSegementTest(unittest.TestCase):
 
@@ -44,6 +47,21 @@ class WorldSegementTest(unittest.TestCase):
             segment = factory.getWorldSegment(0)
             self.assertNotEqual(segment, None)
             self.assertEqual(len(segment.boxes), 2)
+            
+            for box in segment.boxes.values():
+                self.assertHasAllNeighbors(box, Dimensions(2,2,2))
 
+    def assertHasAllNeighbors(self, box, dimensions):
+        '''
+        Given a box and world dimensions, assert that box has all required neighbors connected to it.
+        '''
+        
+        
+        segment = Segment(Coord(0,0,0), Coord(dimensions.x-1,dimensions.y-1, dimensions.z-1))
+        for p in box.position.surroundingCoords():
+            if segment.contains(p):
+                self.assertTrue(box.neighbors.has_key(p) and box.neighbors[p] != None, 
+                                "Box at %s does not have neighbor %s" % (box.position, p))
+            
 if __name__ == '__main__':
     unittest.main()

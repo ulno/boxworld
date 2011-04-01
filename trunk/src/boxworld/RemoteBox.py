@@ -10,50 +10,30 @@ from Inbox import RemoteInbox
 
 class RemoteBox:
     
-    def __init__(self, coords, mpiChannel, remoteManager):
-        self.coords = coords
+    def __init__(self, position, mpiChannel, remoteManager):
+        self.position = position
         self.mpiChannel = mpiChannel
         self.remoteManager = remoteManager
 
         #will send messages through MPI
-        self.up_inbox = RemoteInbox((coords[0], coords[1], coords[2]+1), self.coords, mpiChannel)
-        self.down_inbox = RemoteInbox((coords[0], coords[1], coords[2]-1), self.coords, mpiChannel)
-        self.left_inbox = RemoteInbox((coords[0]-1, coords[1], coords[2]), self.coords, mpiChannel)
-        self.right_inbox = RemoteInbox((coords[0]+1, coords[1], coords[2]), self.coords, mpiChannel)
-        self.front_inbox = RemoteInbox((coords[0], coords[1]-1, coords[2]), self.coords, mpiChannel)
-        self.back_inbox = RemoteInbox((coords[0], coords[1]+1, coords[2]), self.coords, mpiChannel)
+        
+        self.inboxes = {}
+        
+        for n in self.position.surroundingCoords():
+            self.inboxes[n] = RemoteInbox(n, self.position, mpiChannel)
 
-        self.up_outbox = None
-        self.down_outbox = None
-        self.left_outbox = None
-        self.right_outbox = None
-        self.front_outbox = None
-        self.back_outbox = None
-
+        self.outboxes = {}
 
     def run(self):
+        pass
+       
+    def connect(self, neighbor):
+        '''
+        Wire our "real" neighbors' inboxes to remote connection manager.
+        '''
         
-        #Wire our "real" neighbors' inboxes to remote connection manager
-        coords = self.coords
-        
-        if self.up_outbox is not None:
-            self.remoteManager.register((coords[0], coords[1], coords[2]+1), self.up_outbox)
-            
-        if self.down_outbox is not None:
-            self.remoteManager.register((coords[0], coords[1], coords[2]-1), self.down_outbox)
-            
-        if self.left_outbox is not None:
-            self.remoteManager.register((coords[0]-1, coords[1], coords[2]), self.left_outbox)
-            
-        if self.right_outbox is not None:
-            self.remoteManager.register((coords[0]+1, coords[1], coords[2]), self.right_outbox)
-            
-        if self.front_outbox is not None:
-            self.remoteManager.register((coords[0], coords[1]-1, coords[2]), self.front_outbox)
-            
-        if self.back_outbox is not None:
-            self.remoteManager.register((coords[0], coords[1]+1, coords[2]), self.back_outbox)
-            
+        p = neighbor.position     
+        self.remoteManager.register((p.x, p.y, p.z), neighbor.inboxes[self.position])     
 
 class RemoteBoxFactory:
     

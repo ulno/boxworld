@@ -1,10 +1,16 @@
 import re
+import copy
+
 from .Source import Source
 from .Chemical_Sink import Chemical_Sink
 from .Geometry import Dimensions
 from .Geometry import Coord
 from .Box import Box
+from .RemoteBox import RemoteBoxFactory
+from .RemoteBox import RemoteManager
 from .RankMap import RankMapGenerator
+from .MpiChannel import MpiChannelFactory
+from .Geometry import Segment
 
 
 class WorldSegmentFactory:
@@ -17,13 +23,17 @@ class WorldSegmentFactory:
         self.fileName = fileName
         self.sources = []
         self.sinks = []
-        self.boxes = []
+        self.boxes = {}
         self.lightFuncs = {}
         self.tempFuncs = {}
 
         self.importFromFile()
         
         self.rankMap = RankMapGenerator().generate(self.worldSize, self.dimensions)
+        
+        self.remoteChannelFactory = MpiChannelFactory(self.rankMap)
+        self.remoteManager = RemoteManager(self.remoteChannelFactory) 
+        self.rbFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
 
     COMMENT_REGEX = "\s*(#.*)?$" #defined as optional
     EMPTY_LINE_REGEX = COMMENT_REGEX
@@ -84,19 +94,24 @@ class WorldSegmentFactory:
         tempFunc = self.tempFuncs[m.group(3)]
         lightFunc = self.lightFuncs[m.group(2)]
         
-        self.boxes.append(Box(self.currentCoord, self.cubeSize, lightFunc, 
-                              tempFunc,self.timeDelta, self.timeStart, 
-                              self.timeEnd, int(m.group(1)))) 
+        self.boxes[self.currentCoord] = Box(self.currentCoord, self.cubeSize, lightFunc, 
+                                             tempFunc,self.timeDelta, self.timeStart, 
+                                             self.timeEnd, int(m.group(1))) 
+        print "Adding %s" % str(self.currentCoord)
     
         # Increment coordinate for next parsed box
         # The increment order in x, then y, then z. 
         # The values wrap in that order when they hit the max, as defined by self.dimensions   
-        self.currentCoord.x = (self.currentCoord.x + 1) % self.dimensions.x
+        oldCoord = self.currentCoord
+        self.currentCoord = copy.copy(oldCoord)
+        self.currentCoord.x = (oldCoord.x + 1) % self.dimensions.x
         if self.currentCoord.x == 0:
-            self.currentCoord.y = (self.currentCoord.y + 1) % self.dimensions.y
+            self.currentCoord.y = (oldCoord.y + 1) % self.dimensions.y
             if self.currentCoord.y == 0:
-                # Z is the last to increment and thus should never wrap
-                self.currentCoord.z = self.currentCoord.z + 1
+                # Z is the last to increment and thus should never wrap (except for very last iteration)
+                self.currentCoord.z = oldCoord.z + 1
+                
+        
             
     def parseSink(self, line):        
         m = re.match(self.SINK_REGEX, line)
@@ -174,22 +189,24 @@ class WorldSegmentFactory:
             return
         
     def getWorldSegment(self, rank):
-        assert rank >= 0 and rank < self.worldSize
+        '''
+        Given a valid MPI rank, returns the corresponding WorldSegment.
+        '''
+        
+        assert rank >= 0 and rank < self.worldSize, "Invalid rank %d for world size %d" % (rank, self.worldSize)
         segment = self.rankMap.getSegment(rank)
-        boxes = []
+        boxes = {}
         for coord in segment.coorditer():
-            boxes.append(self.boxes[coord.z*self.dimensions.x*self.dimensions.y + 
-                                    coord.y * self.dimensions.x +
-                                    coord.x - 1])
+            boxes[coord] = self.boxes[coord]
 
-        return WorldSegment(rank, self.worldSize, segment, boxes)
+        return WorldSegment(rank, self.worldSize, self.dimensions, segment, boxes, self.rbFactory)
 
 class WorldSegment:
     '''
     A 3D rectangular collection of connected boxes within the world.
     '''
     
-    def __init__(self, rank, worldSize, segment, boxes):
+    def __init__(self, rank, worldSize, worldDimensions, segment, boxes, remoteBoxFactory):
         assert rank < worldSize, "%d not < %d" % (rank, worldSize)
         assert len(boxes) > 0
         
@@ -197,8 +214,22 @@ class WorldSegment:
         self.worldSize = worldSize
         self.boxes = boxes
         self.segment = segment
+        self.worldArea = Segment(Coord(0,0,0), Coord(worldDimensions.x-1, worldDimensions.y-1, worldDimensions.z-1))
         
-        #TODO wire the local boxes together, and wire local with remote boxes.
+        # Wire the local boxes together, and wire local with remote boxes.
+        for (coord, box) in boxes.iteritems():
+            print "Connection box: %s" % coord
+            for n in coord.surroundingCoords():
+                if self.segment.contains(n):
+                    print "\tAdding local neighbor %s" % n
+                    box.connect(boxes[n])
+                elif self.worldArea.contains(n):
+                    #Each remote box will be connected to one and one local box
+                    print "\tAdding remote neighbor %s" % n
+                    rb = remoteBoxFactory.getBox(n)
+                    box.connect(rb)
+                    rb.connect(box)
+                    
     
     def run(self):
         
