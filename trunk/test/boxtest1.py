@@ -16,6 +16,7 @@ import boxworld.Source as sc
 import boxworld.Chemical_Sink as cs
 import boxworld.Transport as tr
 import boxworld.Inbox as ib
+from boxworld.Geometry import Coord
 import random
 
 '''
@@ -50,7 +51,7 @@ world = {} # Coordinate tuple => box map
 points = ((0,0,0), (1,0,0), (-1,0,0), (0,-1,0), (0,1,0), (0,0,1), (0,0,-1))
 
 for p in points:
-    world[p] = box.Box(p,1,ltf,ttf,10,0, end_time, random.randint(0,10))
+    world[p] = box.Box(Coord(p[0], p[1], p[2]),1,ltf,ttf,10,0, end_time, random.randint(0,10))
 
 # Connect all the boxes together
 # Use 'right-hand-rule' for orientation

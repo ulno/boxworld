@@ -22,7 +22,8 @@
 import Inbox
 
 from threading import Thread
-from Transport import Transport
+from .Transport import Transport
+from .Geometry import Coord
 
 class Box:
 	'''
@@ -34,6 +35,8 @@ class Box:
 	
 	def __init__(self, position, cube_length, light_time_function, 
 				temperature_time_function, timedelta, initial_time, end_time, initial_terpene):
+		
+		assert isinstance(position, Coord)
 		
 		self.cubelength = cube_length
 		self.light_time_function = light_time_function
@@ -53,8 +56,7 @@ class Box:
 		self.inboxes = {}
 		
 		for n in self.position.surroundingCoords():
-			if n.x >= 0 and n.y >= 0 and n.z >= 0:
-				self.inboxes[n] = Inbox.LocalInbox()
+			self.inboxes[n] = Inbox.LocalInbox()
 		'''			
 		self.up_inbox = self.inboxes[0]
 		self.down_inbox = self.inboxes[1]
@@ -84,55 +86,80 @@ class Box:
 		'''
 		specify left neighbor
 		'''
+		self.connect(neighbor)
+		'''
 		self.left_outbox = neighbor.right_inbox
 		neighbor.right_outbox = self.left_inbox
 		self.channels.append((self.left_inbox, self.left_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 
 	def connect_right(self, neighbor):
 		'''
 		specify left neighbor
 		'''
+		self.connect(neighbor)
+		'''
 		self.right_outbox = neighbor.left_inbox
 		neighbor.left_outbox = self.right_inbox
 		self.channels.append((self.right_inbox, self.right_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 
 	def connect_up(self, neighbor):
+		self.connect(neighbor)
+		'''
 		self.up_outbox = neighbor.down_inbox
 		neighbor.down_outbox = self.up_inbox
 		self.channels.append((self.up_inbox, self.up_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 
 	def connect_down(self, neighbor):
 		'''
 		specify left neighbor
 		'''
+		
+		self.connect(neighbor)
+		'''
 		self.down_outbox = neighbor.up_inbox
 		neighbor.up_outbox = self.down_inbox
 		self.channels.append((self.down_inbox, self.down_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 
 	def connect_front(self, neighbor):
 		'''
 		specify left neighbor
 		'''
+		
+		self.connect(neighbor)
+		'''
 		self.front_outbox = neighbor.back_inbox
 		neighbor.back_outbox = self.front_inbox
 		self.channels.append((self.front_inbox, self.front_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 
 	def connect_back(self, neighbor):
 		'''
 		specify left neighbor
 		'''
+		
+		self.connect(neighbor)
+		'''
 		self.back_outbox = neighbor.front_inbox
 		neighbor.front_outbox = self.back_inbox		
 		self.channels.append((self.back_inbox, self.back_outbox))
 		self.neighbors[neighbor.position] = neighbor
+		'''
 		
 	def connect(self, neighbor):
 		self.neighbors[neighbor.position] = neighbor
+		
+		assert self.inboxes.has_key(neighbor.position), "Box %s does not have neighbor %s" % (self.position, neighbor.position)
+		assert neighbor.inboxes.has_key(self.position), "Box %s does not have neighbor %s" % (neighbor.position, self.position)
+		
 		self.channels.append((self.inboxes[neighbor.position], neighbor.inboxes[self.position]))
 		
 	def run(self):

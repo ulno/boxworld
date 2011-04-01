@@ -6,7 +6,7 @@ Created on 5.3.2011
 @author: steffen
 '''
 
-import Chemical_Sink as cs
+import boxworld.Chemical_Sink as cs
 import numpy as np
 import matplotlib.pyplot as plt
 
