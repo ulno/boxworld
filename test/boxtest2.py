@@ -10,6 +10,7 @@ from boxworld.MpiChannel import MpiChannelFactory
 from boxworld.Box import Box
 from boxworld.RemoteBox import RemoteBoxFactory
 from boxworld.RemoteBox import RemoteManager
+from boxworld.Geometry import Coord
 import random
 
 
@@ -27,8 +28,8 @@ end_time = 1000
 time_delta = 1
 
 
-box1 = Box((0,0,0),1,ltf,ttf,time_delta,0, end_time, 10)
-box2 = Box((1,0,0),1,ltf,ttf,time_delta, 0, end_time, 100)
+box1 = Box(Coord(0,0,0),1,ltf,ttf,time_delta,0, end_time, 10)
+box2 = Box(Coord(1,0,0),1,ltf,ttf,time_delta, 0, end_time, 100)
 
 box1.connect_right(box2)
 box2.connect_left(box1)
