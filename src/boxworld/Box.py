@@ -50,16 +50,19 @@ class Box:
 		#
 		self.mtWeight = 136
 		
-		self.inboxes = [];
-		for _ in range(6):
-			self.inboxes.append(Inbox.LocalInbox())
+		self.inboxes = {}
+		
+		for n in self.position.surroundingCoords():
+			if n.x >= 0 and n.y >= 0 and n.z >= 0:
+				self.inboxes[n] = Inbox.LocalInbox()
+		'''			
 		self.up_inbox = self.inboxes[0]
 		self.down_inbox = self.inboxes[1]
 		self.left_inbox = self.inboxes[2]
 		self.right_inbox = self.inboxes[3]
 		self.front_inbox = self.inboxes[4]
 		self.back_inbox = self.inboxes[5]
-		
+		'''		
 		self.sources_list = ()
 		self.sink_list = ()
 		
@@ -68,6 +71,8 @@ class Box:
 		self.end_time = end_time
 		
 		self.channels = [] # (inbox, outbox)
+		
+		self.neighbors = {}
 		
 	def set_sources(self, sources_list):
 		self.sources_list = sources_list
@@ -82,6 +87,7 @@ class Box:
 		self.left_outbox = neighbor.right_inbox
 		neighbor.right_outbox = self.left_inbox
 		self.channels.append((self.left_inbox, self.left_outbox))
+		self.neighbors[neighbor.position] = neighbor
 
 	def connect_right(self, neighbor):
 		'''
@@ -90,11 +96,13 @@ class Box:
 		self.right_outbox = neighbor.left_inbox
 		neighbor.left_outbox = self.right_inbox
 		self.channels.append((self.right_inbox, self.right_outbox))
+		self.neighbors[neighbor.position] = neighbor
 
 	def connect_up(self, neighbor):
 		self.up_outbox = neighbor.down_inbox
 		neighbor.down_outbox = self.up_inbox
 		self.channels.append((self.up_inbox, self.up_outbox))
+		self.neighbors[neighbor.position] = neighbor
 
 	def connect_down(self, neighbor):
 		'''
@@ -103,6 +111,7 @@ class Box:
 		self.down_outbox = neighbor.up_inbox
 		neighbor.up_outbox = self.down_inbox
 		self.channels.append((self.down_inbox, self.down_outbox))
+		self.neighbors[neighbor.position] = neighbor
 
 	def connect_front(self, neighbor):
 		'''
@@ -111,6 +120,7 @@ class Box:
 		self.front_outbox = neighbor.back_inbox
 		neighbor.back_outbox = self.front_inbox
 		self.channels.append((self.front_inbox, self.front_outbox))
+		self.neighbors[neighbor.position] = neighbor
 
 	def connect_back(self, neighbor):
 		'''
@@ -119,6 +129,11 @@ class Box:
 		self.back_outbox = neighbor.front_inbox
 		neighbor.front_outbox = self.back_inbox		
 		self.channels.append((self.back_inbox, self.back_outbox))
+		self.neighbors[neighbor.position] = neighbor
+		
+	def connect(self, neighbor):
+		self.neighbors[neighbor.position] = neighbor
+		self.channels.append((self.inboxes[neighbor.position], neighbor.inboxes[self.position]))
 		
 	def run(self):
 		'''
