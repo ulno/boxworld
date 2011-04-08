@@ -33,7 +33,7 @@ class RemoteBox:
         '''
         
         p = neighbor.position     
-        self.remoteManager.register((p.x, p.y, p.z), neighbor.inboxes[self.position])     
+        self.remoteManager.register(p, neighbor.inboxes[self.position])     
 
 class RemoteBoxFactory:
     

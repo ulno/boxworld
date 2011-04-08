@@ -31,9 +31,6 @@ class WorldSegmentFactory:
         
         self.rankMap = RankMapGenerator().generate(self.worldSize, self.dimensions)
         
-        self.remoteChannelFactory = MpiChannelFactory(self.rankMap)
-        self.remoteManager = RemoteManager(self.remoteChannelFactory) 
-        self.rbFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
 
     COMMENT_REGEX = "\s*(#.*)?$" #defined as optional
     EMPTY_LINE_REGEX = COMMENT_REGEX
@@ -199,14 +196,14 @@ class WorldSegmentFactory:
         for coord in segment.coorditer():
             boxes[coord] = self.boxes[coord]
 
-        return WorldSegment(rank, self.worldSize, self.dimensions, segment, boxes, self.rbFactory)
+        return WorldSegment(rank, self.worldSize, self.dimensions, segment, boxes, self.rankMap)
 
 class WorldSegment:
     '''
     A 3D rectangular collection of connected boxes within the world.
     '''
     
-    def __init__(self, rank, worldSize, worldDimensions, segment, boxes, remoteBoxFactory):
+    def __init__(self, rank, worldSize, worldDimensions, segment, boxes, rankMap):
         assert rank < worldSize, "%d not < %d" % (rank, worldSize)
         assert len(boxes) > 0
         
@@ -215,6 +212,10 @@ class WorldSegment:
         self.boxes = boxes
         self.segment = segment
         self.worldArea = Segment(Coord(0,0,0), Coord(worldDimensions.x-1, worldDimensions.y-1, worldDimensions.z-1))
+        
+        self.remoteChannelFactory = MpiChannelFactory(rankMap)
+        self.remoteManager = RemoteManager(self.remoteChannelFactory) 
+        self.remoteBoxFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
         
         # Wire the local boxes together, and wire local with remote boxes.
         for (coord, box) in boxes.iteritems():
@@ -226,16 +227,23 @@ class WorldSegment:
                 elif self.worldArea.contains(n):
                     #Each remote box will be connected to one and one local box
                     print "\tAdding remote neighbor %s" % n
-                    rb = remoteBoxFactory.getBox(n)
+                    rb = self.remoteBoxFactory.getBox(n)
                     box.connect(rb)
                     rb.connect(box)
                     
     
     def run(self):
+        '''
+        Run the experiment for the boxes contained in this world segment.
+        This call blocks until all boxes have fully executed.
+        '''
+        self.remoteManager.run()
         
         self.boxThreads = []
-        for box in self.boxes():
+        for box in self.boxes.values():
             self.boxThreads.append(box.run())
             
         for t in self.boxThreads:
             t.join()
+            
+        self.remoteManager.stop()
