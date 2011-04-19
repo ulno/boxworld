@@ -49,8 +49,8 @@ class Box:
 		self.nair = 101325 * 6.022e23 / (8.314 * (25 + 273.15))
 		self.fnair = self.nair * 1e-6 * 1e-9 * 1e-11 # adapted to get rid of large numbers for molecules!
 
-		# Molecular weight of a monoterpene
-		#
+		# Molecular weight of a monoterpene 
+		# 
 		self.mtWeight = 136
 		
 		self.inboxes = {}
