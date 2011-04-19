@@ -18,15 +18,15 @@ import matplotlib.pyplot as plt
 # scaling to convert ppbv to molecules per cube centimeter (m3)
 #
 nair = 101325 * 6.022e23 / (8.314 * (25 + 273.15))
-fnair = nair * 1e-6 * 1e-9
+fnair = nair * 1e-6 * 1e-9 * 1e-11
 
 # Molecular weight of a monoterpene
 #
 mtWeight = 136
 
 #smt = so.Source(1000,25,3.777)
-smt = so.Source(1000,25,4)
-csi = cs.Chemical_Sink(5.e11,25,15*fnair,2*fnair,1e-4*fnair)
+smt = so.Source(1000,25,1)
+csi = cs.Chemical_Sink(5.0,25,15*fnair,2*fnair,1e-4*fnair)
 
 # generate 100 random ozone and nox data
 oz = np.random.rand(100) * 15
@@ -40,7 +40,7 @@ tp = np.sin((vec/100)*np.pi) * 35
 
 # timestep and calculation of terpene budget with source and sink 
 dt = 10
-terp =[5e11]
+terp =[5.0]
 for i in np.arange(100):
     csi.ozone = oz[i]
     csi.nox = no[i]
