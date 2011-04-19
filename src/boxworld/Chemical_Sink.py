@@ -42,19 +42,19 @@ class Chemical_Sink:
 		'''
 		Reaction constant for the terpene - hydroxyl radical reaction
 		'''
-		return 1.2e-11 * np.exp(444./temp) 
+		return 1.2 * np.exp(444./temp) # 1.2e-11 * np.exp(444./temp) 
 	
 	def Ko3(self, temp):
 		'''
 		Reaction constant for the terpene - ozone reaction
 		'''
-		return 1.01e-15 * np.exp(-732./temp)
+		return 1.01e-4 * np.exp(-732./temp) # 1.01e-15 * np.exp(-732./temp)
 	
 	def Knox(self, temp):
 		'''
 		Reaction canstant for the terpene - nitrate oxygen reaction
 		'''
-		return 1.19e-12 * np.exp(490./temp)
+		return 1.19e-1 * np.exp(490./temp) # 1.19e-12 * np.exp(490./temp)
 	
 	def compute(self, time):
 		'''
