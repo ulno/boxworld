@@ -63,6 +63,11 @@ class Segment:
         assert (endCoord.y >= startCoord.y), "Coord %s not >= %s" % (endCoord, startCoord)
         assert (endCoord.z >= startCoord.z), "Coord %s not >= %s" % (endCoord, startCoord)
     
+    def dimensions(self):
+    	return Dimensions(self.endCoord.x - self.startCoord.x,
+						  self.endCoord.y - self.startCoord.y,
+						  self.endCoord.z - self.startCoord.z)
+    
     def __str__(self):
         return "[ %s %s ]" % (self.startCoord, self.endCoord)
         

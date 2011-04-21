@@ -11,6 +11,8 @@ from .RemoteBox import RemoteManager
 from .RankMap import RankMapGenerator
 from .MpiChannel import MpiChannelFactory
 from .Geometry import Segment
+from .StateConsumer import StateConsumer
+from .FIleWriter import FileWriter
 
 
 class WorldSegmentFactory:
@@ -26,7 +28,7 @@ class WorldSegmentFactory:
         self.boxes = {}
         self.lightFuncs = {}
         self.tempFuncs = {}
-
+        
         self.importFromFile()
         
         self.rankMap = RankMapGenerator().generate(self.worldSize, self.dimensions)
@@ -94,7 +96,7 @@ class WorldSegmentFactory:
         self.boxes[self.currentCoord] = Box(self.currentCoord, self.cubeSize, lightFunc, 
                                              tempFunc,self.timeDelta, self.timeStart, 
                                              self.timeEnd, int(m.group(1))) 
-        print "Adding %s" % str(self.currentCoord)
+        #bprint "Adding %s" % str(self.currentCoord)
     
         # Increment coordinate for next parsed box
         # The increment order in x, then y, then z. 
@@ -105,7 +107,7 @@ class WorldSegmentFactory:
         if self.currentCoord.x == 0:
             self.currentCoord.y = (oldCoord.y + 1) % self.dimensions.y
             if self.currentCoord.y == 0:
-                # Z is the last to increment and thus should never wrap (except for very last iteration)
+                # Z is the last to increment and thus should never wrap (except for very last iteration which is disregarded)
                 self.currentCoord.z = oldCoord.z + 1
                 
         
@@ -217,8 +219,16 @@ class WorldSegment:
         self.remoteManager = RemoteManager(self.remoteChannelFactory) 
         self.remoteBoxFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
         
+        self.stateConsumer = StateConsumer(FileWriter("blah-%d.txt" % self.rank), 
+                                           boxes.values()[0], #hack 
+                                           self.worldArea.dimensions())
+        
         # Wire the local boxes together, and wire local with remote boxes.
         for (coord, box) in boxes.iteritems():
+            
+            box.stateConsumer = self.stateConsumer
+            
+            
             print "Connection box: %s" % coord
             for n in coord.surroundingCoords():
                 if self.segment.contains(n):
@@ -237,7 +247,13 @@ class WorldSegment:
         Run the experiment for the boxes contained in this world segment.
         This call blocks until all boxes have fully executed.
         '''
+        print "Starting Remote Manager"
         self.remoteManager.run()
+        
+        print "Starting State Consumer"
+        self.stateConsumer.start()
+        
+        print "Starting Boxes"
         
         self.boxThreads = []
         for box in self.boxes.values():
@@ -246,4 +262,8 @@ class WorldSegment:
         for t in self.boxThreads:
             t.join()
             
+        print "Joining on state consumer"
+        self.stateConsumer.join()
+        
+        print "Stopping remoteManager"
         self.remoteManager.stop()
