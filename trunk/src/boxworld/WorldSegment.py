@@ -220,8 +220,8 @@ class WorldSegment:
         self.remoteBoxFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
         
         self.stateConsumer = StateConsumer(FileWriter("blah-%d.txt" % self.rank), 
-                                           boxes.values()[0], #hack 
-                                           self.worldArea.dimensions())
+                                           boxes.values()[0].end_time, #hack 
+                                           self.segment)
         
         # Wire the local boxes together, and wire local with remote boxes.
         for (coord, box) in boxes.iteritems():
@@ -229,14 +229,14 @@ class WorldSegment:
             box.stateConsumer = self.stateConsumer
             
             
-            print "Connection box: %s" % coord
+            #print "Connection box: %s" % coord
             for n in coord.surroundingCoords():
                 if self.segment.contains(n):
-                    print "\tAdding local neighbor %s" % n
+                    #print "\tAdding local neighbor %s" % n
                     box.connect(boxes[n])
                 elif self.worldArea.contains(n):
                     #Each remote box will be connected to one and one local box
-                    print "\tAdding remote neighbor %s" % n
+                    #print "\tAdding remote neighbor %s" % n
                     rb = self.remoteBoxFactory.getBox(n)
                     box.connect(rb)
                     rb.connect(box)

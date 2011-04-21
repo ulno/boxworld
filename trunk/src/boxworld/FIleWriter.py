@@ -14,10 +14,12 @@ class FileWriter:
         '''
         Write a 'Frame' to disk. A Frame constitutes the time and all cell values.
         '''
-        
-        self.file.write("START FRAME %f" % frame.time)
+        self.file.write("START FRAME %f\n" % frame.time)
         
         for value in frame.values:
-            self.file.write(str(value))
+            self.file.write("%d\n" % value)
         
-        self.file.write("END FRAME %f" % frame.time)
+        self.file.write("END FRAME %f\n" % frame.time)
+        
+    def close(self):
+        self.file.close()
