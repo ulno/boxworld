@@ -34,7 +34,8 @@ class Box:
 	'''
 	
 	def __init__(self, position, cube_length, light_time_function, 
-				temperature_time_function, timedelta, initial_time, end_time, initial_terpene):
+				temperature_time_function, timedelta, initial_time, 
+				end_time, initial_terpene):
 		
 		assert isinstance(position, Coord)
 		
@@ -57,14 +58,7 @@ class Box:
 		
 		for n in self.position.surroundingCoords():
 			self.inboxes[n] = Inbox.LocalInbox()
-		'''			
-		self.up_inbox = self.inboxes[0]
-		self.down_inbox = self.inboxes[1]
-		self.left_inbox = self.inboxes[2]
-		self.right_inbox = self.inboxes[3]
-		self.front_inbox = self.inboxes[4]
-		self.back_inbox = self.inboxes[5]
-		'''		
+
 		self.sources_list = ()
 		self.sink_list = ()
 		
@@ -83,76 +77,22 @@ class Box:
 		self.sink_list = sink_list
 	
 	def connect_left(self, neighbor):
-		'''
-		specify left neighbor
-		'''
 		self.connect(neighbor)
-		'''
-		self.left_outbox = neighbor.right_inbox
-		neighbor.right_outbox = self.left_inbox
-		self.channels.append((self.left_inbox, self.left_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
 
 	def connect_right(self, neighbor):
-		'''
-		specify left neighbor
-		'''
 		self.connect(neighbor)
-		'''
-		self.right_outbox = neighbor.left_inbox
-		neighbor.left_outbox = self.right_inbox
-		self.channels.append((self.right_inbox, self.right_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
 
 	def connect_up(self, neighbor):
 		self.connect(neighbor)
-		'''
-		self.up_outbox = neighbor.down_inbox
-		neighbor.down_outbox = self.up_inbox
-		self.channels.append((self.up_inbox, self.up_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
 
 	def connect_down(self, neighbor):
-		'''
-		specify left neighbor
-		'''
-		
 		self.connect(neighbor)
-		'''
-		self.down_outbox = neighbor.up_inbox
-		neighbor.up_outbox = self.down_inbox
-		self.channels.append((self.down_inbox, self.down_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
 
 	def connect_front(self, neighbor):
-		'''
-		specify left neighbor
-		'''
-		
 		self.connect(neighbor)
-		'''
-		self.front_outbox = neighbor.back_inbox
-		neighbor.back_outbox = self.front_inbox
-		self.channels.append((self.front_inbox, self.front_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
-
+		
 	def connect_back(self, neighbor):
-		'''
-		specify left neighbor
-		'''
-		
 		self.connect(neighbor)
-		'''
-		self.back_outbox = neighbor.front_inbox
-		neighbor.front_outbox = self.back_inbox		
-		self.channels.append((self.back_inbox, self.back_outbox))
-		self.neighbors[neighbor.position] = neighbor
-		'''
 		
 	def connect(self, neighbor):
 		self.neighbors[neighbor.position] = neighbor
@@ -171,8 +111,7 @@ class Box:
 		t = Thread(target=self.__run)
 		t.start()
 
-		return t
-			
+		return t		
 		
 	def __run(self):
 		
@@ -184,7 +123,10 @@ class Box:
 			
 	def __runStep(self):
 		
-		print "Box %s running time %d, terplevel=%d" % (str(self.position), self.time, self.terpene_concentration)
+		#print "Box %s running time %d, terplevel=%d" % (str(self.position), self.time, self.terpene_concentration)
+		
+		# Notify consumer of current state
+		self.stateConsumer.register(self)
 		
 		prevStates = []
 		
