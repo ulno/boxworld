@@ -39,17 +39,22 @@ class WorldSegmentFactory:
     TIME_START_REGEX = "time_start\s+(\d+)" + COMMENT_REGEX
     TIME_END_REGEX = "time_end\s+(\d+)" + COMMENT_REGEX
     TIME_DELTA_REGEX = "time_delta\s+(\d+)" + COMMENT_REGEX
+    OUTPUT_FILE_REGEX = "output_file\s+(\w+)" + COMMENT_REGEX
     CUBE_SIZE_REGEX = "cube_size\s+(\d+)" + COMMENT_REGEX
     DIMENSIONS_REGEX = "dimensions\s+(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
     
     LIGHT_FUNC_REGEX = "light_function\s+(\w+)\s+(lambda.+)"
     TEMP_FUNC_REGEX = "temperature_function\s+(\w+)\s+(lambda.+)"
     
+    
+    
     SOURCE_REGEX = "(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
     
     SINK_REGEX = "(\d+),(\d+),(\d+),(\d+),(\d+)\s*" + COMMENT_REGEX
 
     BOX_REGEX = "(\d+),(\w+),(\w+)\s*" + COMMENT_REGEX
+
+    
 
     #Parse States
     PARSE_WORLD_SETTING = 'parseWorldSetting'
@@ -149,8 +154,14 @@ class WorldSegmentFactory:
         self.sources.append(Source(int(m.group(1)), int(m.group(2)), int(m.group(3))))
     
     def parseWorldSetting(self, line):
+        
         if re.match(self.EMPTY_LINE_REGEX, line):
-                return
+            return
+        
+        m = re.match(self.OUTPUT_FILE_REGEX, line)
+        if m:
+            self.outFileName = m.group(1)
+            return
             
         m = re.match(self.TIME_START_REGEX, line)
         if m:
@@ -198,14 +209,17 @@ class WorldSegmentFactory:
         for coord in segment.coorditer():
             boxes[coord] = self.boxes[coord]
 
-        return WorldSegment(rank, self.worldSize, self.dimensions, segment, boxes, self.rankMap)
+        return WorldSegment(rank, self.worldSize, self.dimensions, 
+                            segment, boxes, self.rankMap, self.outFileName)
 
 class WorldSegment:
     '''
     A 3D rectangular collection of connected boxes within the world.
     '''
     
-    def __init__(self, rank, worldSize, worldDimensions, segment, boxes, rankMap):
+    def __init__(self, rank, worldSize, worldDimensions, 
+                 segment, boxes, rankMap, outFileName):
+        
         assert rank < worldSize, "%d not < %d" % (rank, worldSize)
         assert len(boxes) > 0
         
@@ -219,7 +233,7 @@ class WorldSegment:
         self.remoteManager = RemoteManager(self.remoteChannelFactory) 
         self.remoteBoxFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
         
-        self.stateConsumer = StateConsumer(FileWriter("blah-%d.txt" % self.rank), 
+        self.stateConsumer = StateConsumer(FileWriter("%s-%d.txt" % (outFileName, self.rank)), 
                                            boxes.values()[0].end_time, #hack 
                                            self.segment)
         
