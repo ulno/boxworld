@@ -55,7 +55,7 @@ class RemoteManager:
         self.mpiChannelFactory = mpiChannelFactory
     
     def register(self, coords, inbox):
-        print "Register coord %s" % str(coords)
+        #print "Register coord %s" % str(coords)
         self.inboxes[coords] = inbox
     
     def run(self):

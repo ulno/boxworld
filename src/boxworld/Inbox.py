@@ -40,9 +40,9 @@ class RemoteInbox():
 
     
     def put(self, obj):
-        print ("Sending from %s to %s" %(str(self.srcCoords), str(self.destCoords)))
+        #print ("Sending from %s to %s" %(str(self.srcCoords), str(self.destCoords)))
         self.mpiChannel.send(Envelope(self.srcCoords, self.destCoords, obj))
     
     def take(self):
-        print "Trying to take from remote"
+        assert False, "Trying to take from remote"
         
