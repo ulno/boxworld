@@ -1,6 +1,7 @@
 #Test World 1
 
 time_start 0
+#time_end 1
 time_end 1000
 time_delta 1
 
@@ -8,7 +9,7 @@ time_delta 1
 dimensions 2,2,2
 
 cube_size 1 #1 meter cubed
-
+output_file testworld
 
 sources_start
 #light, temp, base emission
