@@ -6,9 +6,17 @@ class FileWriter:
     '''
     
     
-    def __init__(self, fileName):
+    def __init__(self, fileName, segment):
         self.fileName = fileName
         self.file = open(fileName, 'w')
+        self.segment = segment
+        
+        self.file.write("SEGMENT %d,%d,%d %d,%d,%d\n" % (segment.startCoord.x, 
+                                                        segment.startCoord.y, 
+                                                        segment.startCoord.z,
+                                                        segment.endCoord.x, 
+                                                        segment.endCoord.y, 
+                                                        segment.endCoord.z))
         
     def write(self, frame):
         '''
