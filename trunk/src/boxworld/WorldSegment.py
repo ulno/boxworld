@@ -233,7 +233,7 @@ class WorldSegment:
         self.remoteManager = RemoteManager(self.remoteChannelFactory) 
         self.remoteBoxFactory = RemoteBoxFactory(self.remoteChannelFactory, self.remoteManager)
         
-        self.stateConsumer = StateConsumer(FileWriter("%s-%d.txt" % (outFileName, self.rank)), 
+        self.stateConsumer = StateConsumer(FileWriter("%s-%d.txt" % (outFileName, self.rank), self.segment), 
                                            boxes.values()[0].end_time, #hack 
                                            self.segment)
         
