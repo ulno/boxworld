@@ -1,0 +1,6 @@
+package dependencies
+
+python2.6
+python-mpi4py
+python-matplotlib
+
