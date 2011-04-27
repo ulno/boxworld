@@ -96,7 +96,7 @@ class RankMap:
                     (startZ, endZ) = self._points(z, zWidth)
                     
                     rMap[rank] = Segment(Coord(startX, startY, startZ),
-                                         Coord(endX, endY, endZ))
+                                         Coord(endX, endY, endZ))                    
                     rank += 1
                     
         self.rMap = rMap

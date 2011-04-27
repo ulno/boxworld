@@ -1,3 +1,4 @@
+
 #! /usr/bin/python
 '''
 Run as
@@ -17,9 +18,6 @@ from boxworld.RemoteBox import RemoteManager
 from boxworld.WorldSegment import WorldSegmentFactory
 import sys
 import random
-
-
-
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
