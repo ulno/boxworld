@@ -89,4 +89,11 @@ class Segment:
             for y in range(self.startCoord.y, self.endCoord.y+1):
                 for z in range(self.startCoord.z, self.endCoord.z+1):
                     yield Coord(x, y, z)
+                    
+    def vtkCoordIter(self):
+    	for z in range(self.startCoord.z, self.endCoord.z+1):
+    		for y in range(self.startCoord.y, self.endCoord.y+1):
+    			for x in range(self.startCoord.x, self.endCoord.x+1):
+    				yield Coord(x, y, z)
+    			
 		

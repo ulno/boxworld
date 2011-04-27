@@ -1,6 +1,5 @@
 import unittest
-from boxworld.WorldSegement import WorldSegment
-from boxworld.WorldSegment import WorldSegmentFactory
+from boxworld.WorldSegment import WorldSegment, WorldSegmentFactory
 from boxworld.Geometry import Dimensions
 from boxworld.Geometry import Segment
 from boxworld.Geometry import Coord
@@ -13,9 +12,9 @@ class WorldSegementTest(unittest.TestCase):
 
     def testParseFile1(self):
         file = "./testworld.txt"
-        factory = WorldSegmentFactory(4, file)
+        factory = WorldSegmentFactory(2, file)
         
-        self.assertEqual(factory.worldSize, 4)
+        self.assertEqual(factory.worldSize, 2)
         self.assertEqual(factory.fileName, file)
         self.assertEqual(factory.timeStart, 0)
         self.assertEqual(factory.timeEnd, 1000)
@@ -43,20 +42,38 @@ class WorldSegementTest(unittest.TestCase):
         
         self.assertEqual(len(factory.boxes), 8)
         
-        for rank in range(4):
+        for rank in range(2):
             segment = factory.getWorldSegment(0)
             self.assertNotEqual(segment, None)
-            self.assertEqual(len(segment.boxes), 2)
+            self.assertEqual(len(segment.boxes), 4)
             
             for box in segment.boxes.values():
                 self.assertHasAllNeighbors(box, Dimensions(2,2,2))
+                
+        segment = factory.getWorldSegment(0)
+        
+        for coord,terp in [(Coord(0,0,0), 0), 
+                           (Coord(0,1,0), 2),
+                           (Coord(1,0,0), 4),
+                           (Coord(1,1,0), 6)]:
+            self.assertTrue(segment.boxes.has_key(coord))
+            self.assertEquals(segment.boxes[coord].terpene_concentration, terp)
+        
+        segment = factory.getWorldSegment(1)
+        
+        for coord,terp in [(Coord(0,0,1), 1), 
+                           (Coord(0,1,1), 3),
+                           (Coord(1,0,1), 5),
+                           (Coord(1,1,1), 7)]:
+            self.assertTrue(segment.boxes.has_key(coord))
+            self.assertEquals(segment.boxes[coord].terpene_concentration, terp)    
+    
 
     def assertHasAllNeighbors(self, box, dimensions):
         '''
         Given a box and world dimensions, assert that box has all required neighbors connected to it.
         '''
-        
-        
+             
         segment = Segment(Coord(0,0,0), Coord(dimensions.x-1,dimensions.y-1, dimensions.z-1))
         for p in box.position.surroundingCoords():
             if segment.contains(p):

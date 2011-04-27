@@ -1,6 +1,5 @@
 from Queue import Queue
 from threading import Thread
-from Geometry import Coord
 
 class Frame:
     '''
@@ -9,40 +8,15 @@ class Frame:
     
     def __init__(self, time, segment):
         self.time = time
-        #print "Segment is %s" % str(segment)
-        #print "Making values size %d" % segment.volume()
-        self.values = [None] * segment.volume()
+        self.values = {}
         self.size = segment.volume()
         self.populatedCount = 0
         self.segment = segment
 
-    def __positionToOffset(self, pos):
-        '''
-        Non-collision hash of position to array offset.
-        '''
-        '''
-        Normalize the position, relative to base coordinate of
-        out segment
-        '''
-        normalizedPos = Coord(pos.x - self.segment.startCoord.x,
-                              pos.y - self.segment.startCoord.y,
-                              pos.z - self.segment.startCoord.z)
-        dimensions = self.segment.dimensions()
-        
-        hash = normalizedPos.x + \
-               dimensions.x * normalizedPos.y + \
-               dimensions.x * dimensions.y * normalizedPos.z
-               
-        assert hash < dimensions.volume(),  "For segemnt %s and pos %s, normpos is %s and hash is %d and dimensions are %s" % (str(self.segment), str(pos), str(normalizedPos), hash, str(dimensions))
-
-        return hash
-
     def setValue(self, pos, value):
             
-        boxOffset = self.__positionToOffset(pos)
-        #print "Setting pos: %s with offset %d, existing array is %s" %(str(pos), boxOffset, str(self.values))
-        assert self.values[boxOffset] is None
-        self.values[boxOffset] = value
+        assert not self.values.has_key(pos)
+        self.values[pos] = value
         self.populatedCount += 1
         
     def isFull(self):

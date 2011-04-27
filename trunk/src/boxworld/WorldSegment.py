@@ -1,5 +1,4 @@
 import re
-import copy
 
 from .Source import Source
 from .Chemical_Sink import Chemical_Sink
@@ -12,7 +11,7 @@ from .RankMap import RankMapGenerator
 from .MpiChannel import MpiChannelFactory
 from .Geometry import Segment
 from .StateConsumer import StateConsumer
-from .FIleWriter import FileWriter
+from .FileWriter import FileWriter
 
 
 class WorldSegmentFactory:
@@ -71,9 +70,7 @@ class WorldSegmentFactory:
         file = open(self.fileName, 'r')
         
         self.parseState = 'parseWorldSetting'
-        
-        self.currentCoord = Coord(0,0,0)
-        
+                
         for line in file:
             if re.match(self.EMPTY_LINE_REGEX, line):
                 continue
@@ -98,24 +95,10 @@ class WorldSegmentFactory:
         tempFunc = self.tempFuncs[m.group(3)]
         lightFunc = self.lightFuncs[m.group(2)]
         
-        self.boxes[self.currentCoord] = Box(self.currentCoord, self.cubeSize, lightFunc, 
+        currentCoord = self.currentCoordIter.next()
+        self.boxes[currentCoord] = Box(currentCoord, self.cubeSize, lightFunc, 
                                              tempFunc,self.timeDelta, self.timeStart, 
                                              self.timeEnd, int(m.group(1))) 
-        #bprint "Adding %s" % str(self.currentCoord)
-    
-        # Increment coordinate for next parsed box
-        # The increment order in x, then y, then z. 
-        # The values wrap in that order when they hit the max, as defined by self.dimensions   
-        oldCoord = self.currentCoord
-        self.currentCoord = copy.copy(oldCoord)
-        self.currentCoord.x = (oldCoord.x + 1) % self.dimensions.x
-        if self.currentCoord.x == 0:
-            self.currentCoord.y = (oldCoord.y + 1) % self.dimensions.y
-            if self.currentCoord.y == 0:
-                # Z is the last to increment and thus should never wrap (except for very last iteration which is disregarded)
-                self.currentCoord.z = oldCoord.z + 1
-                
-        
             
     def parseSink(self, line):        
         m = re.match(self.SINK_REGEX, line)
@@ -186,6 +169,9 @@ class WorldSegmentFactory:
         m = re.match(self.DIMENSIONS_REGEX, line)
         if m:
             self.dimensions = Dimensions(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            self.currentCoordIter = Segment(Coord(0,0,0), Coord(self.dimensions.x - 1,
+                                                            self.dimensions.y - 1,
+                                                            self.dimensions.z - 1)).coorditer()
             return
         
         m = re.match(self.LIGHT_FUNC_REGEX, line)
@@ -241,16 +227,12 @@ class WorldSegment:
         for (coord, box) in boxes.iteritems():
             
             box.stateConsumer = self.stateConsumer
-            
-            
-            #print "Connection box: %s" % coord
+              
             for n in coord.surroundingCoords():
                 if self.segment.contains(n):
-                    #print "\tAdding local neighbor %s" % n
                     box.connect(boxes[n])
                 elif self.worldArea.contains(n):
                     #Each remote box will be connected to one and one local box
-                    #print "\tAdding remote neighbor %s" % n
                     rb = self.remoteBoxFactory.getBox(n)
                     box.connect(rb)
                     rb.connect(box)
