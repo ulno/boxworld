@@ -24,8 +24,8 @@ class FileWriter:
         '''
         self.file.write("START FRAME %f\n" % frame.time)
         
-        for value in frame.values:
-            self.file.write("%d\n" % value)
+        for coord in frame.segment.coorditer():
+            self.file.write("%d\n" % frame.values[coord])
         
         self.file.write("END FRAME %f\n" % frame.time)
         
