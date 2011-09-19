@@ -1,4 +1,4 @@
-
+#! /usr/bin/python
 
 from boxworld.FrameFileJoiner import FrameFileJoiner
 import sys
