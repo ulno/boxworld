@@ -35,7 +35,7 @@ class Box:
 	
 	def __init__(self, position, cube_length, light_time_function, 
 				temperature_time_function, timedelta, initial_time, 
-				end_time, initial_terpene):
+				end_time, initial_terpene, sources=(), sinks=()):
 		
 		assert isinstance(position, Coord)
 		
@@ -59,8 +59,8 @@ class Box:
 		for n in self.position.surroundingCoords():
 			self.inboxes[n] = Inbox.LocalInbox()
 
-		self.sources_list = ()
-		self.sink_list = ()
+		self.sources_list = list(sources)
+		self.sink_list = list(sinks)
 		
 		self.time = initial_time
 		self.timedelta = timedelta
@@ -69,6 +69,8 @@ class Box:
 		self.channels = [] # (inbox, outbox)
 		
 		self.neighbors = {}
+		self.stateConsumer = None
+		
 		
 	def set_sources(self, sources_list):
 		self.sources_list = sources_list
@@ -126,7 +128,8 @@ class Box:
 		#print "Box %s running time %d, terplevel=%d" % (str(self.position), self.time, self.terpene_concentration)
 		
 		# Notify consumer of current state
-		self.stateConsumer.register(self)
+		if self.stateConsumer is not None:
+			self.stateConsumer.register(self)
 		
 		prevStates = []
 		
