@@ -20,7 +20,7 @@ class SourceTest(unittest.TestCase):
                 end_time=10, 
                 initial_terpene=1, 
                 sources=(Source(light=1, 
-                                temperature=20, 
+                                temperature=25, 
                                 baseEmission=10),), 
                 sinks=())
         

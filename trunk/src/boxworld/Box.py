@@ -187,6 +187,11 @@ class Box(object):
 	
 		# calculate a budget for current time step and set new concentration
 		self.terpene_concentration += emission + decay
+		
+		# tell the sinks the new concentration inside this box
+		for k in self.sink_list:
+			j.terpene_concentration = self.terpene_concentration
+
 
 	def compute(self):
 		'''

@@ -23,7 +23,7 @@ class SinkTest(unittest.TestCase):
                 initial_time=0, 
                 end_time=10, 
                 initial_terpene=1, 
-                sinks=(Sink(5.0e11,30,15*fnair,2*fnair,1e-4*fnair),))
+                sinks=(Sink(5.0e11,25,15*fnair,2*fnair,1e-4*fnair),))
         
         box.run().join()
         
