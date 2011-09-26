@@ -17,7 +17,7 @@
 
 import numpy as np
 
-class Source:
+class Source(object):
 	'''
 	Terpene emission source
 	'''

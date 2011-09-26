@@ -1,5 +1,5 @@
 
-class Dimensions:
+class Dimensions(object):
 	
 	def __init__(self, x, y, z):
 		
@@ -20,7 +20,7 @@ class Dimensions:
 	def __str__(self):    
 		return "[x=%d y=%d z=%d]" % (self.x, self.y, self.z)
 
-class Coord:
+class Coord(object):
 	
 	def __init__(self, x, y, z):
 		self.x = x
@@ -45,7 +45,7 @@ class Coord:
 	def __hash__(self):
 		return self.x ^ self.y ^ self.z
 	
-class Segment:
+class Segment(object):
     '''
     Represents the location and of a world segment. 
     Defined by two nonequal points. Contains all points between

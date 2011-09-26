@@ -1,10 +1,9 @@
 
 
-class FileWriter:
+class FileWriter(object):
     '''
     Consumes Frame and serializes to disk.
     '''
-    
     
     def __init__(self, fileName, segment):
         self.fileName = fileName

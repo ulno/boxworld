@@ -11,7 +11,7 @@ from Transport import Transport
 
 from Queue import Queue
     
-class LocalInbox(): # TODO: must probably inherit from channel
+class LocalInbox(object): # TODO: must probably inherit from channel
     
 
     def __init__(self):
@@ -29,7 +29,7 @@ class LocalInbox(): # TODO: must probably inherit from channel
     def take(self):
         return self.queue.get(block=True)
     
-class RemoteInbox():
+class RemoteInbox(object):
     
 
     def __init__(self, srcCoords, destCoords, mpiChannel):

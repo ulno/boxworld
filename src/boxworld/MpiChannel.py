@@ -5,14 +5,14 @@ Created on Mar 17, 2011
 '''
 from mpi4py import MPI
 
-class Envelope:
+class Envelope(object):
     
     def __init__(self, src, to, msg):
         self.src = src
         self.to = to
         self.msg = msg
 
-class MpiChannel:
+class MpiChannel(object):
     
     comm = MPI.COMM_WORLD #is this threadsafe?
     
