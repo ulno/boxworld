@@ -28,3 +28,6 @@ class SinkTest(unittest.TestCase):
         box.run().join()
         
         self.assertEqual(box.terpene_concentration, 1)
+        
+if __name__ == "__main__":
+    unittest.main()

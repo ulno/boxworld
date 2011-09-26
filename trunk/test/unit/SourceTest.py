@@ -24,6 +24,10 @@ class SourceTest(unittest.TestCase):
                                 baseEmission=10),), 
                 sinks=())
         
-        box.run()
+        box.run().join()
         
-        self.assertEqual(box.terpene_concentration, 1)
+        self.assertEqual(box.terpene_concentration, 1.0014730507560703)
+    
+    
+if __name__ == "__main__":
+    unittest.main()
