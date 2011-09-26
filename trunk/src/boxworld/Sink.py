@@ -19,7 +19,7 @@
 
 import numpy as np
 
-class Chemical_Sink:
+class Sink(object):
 	'''
 	Definition of a chemical sink for a box.
 	

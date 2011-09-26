@@ -1,7 +1,7 @@
 import re
 
 from .Source import Source
-from .Chemical_Sink import Chemical_Sink
+from .Sink import Sink
 from .Geometry import Dimensions
 from .Geometry import Coord
 from .Box import Box
@@ -14,7 +14,7 @@ from .StateConsumer import StateConsumer
 from .FileWriter import FileWriter
 
 
-class WorldSegmentFactory:
+class WorldSegmentFactory(object):
     
     def __init__(self, worldSize, fileName):
         assert worldSize > 0
@@ -105,7 +105,7 @@ class WorldSegmentFactory:
         if not m:
             raise Exception("Illegal source syntax in line = '%s'" % line)
         
-        self.sinks.append(Chemical_Sink(int(m.group(1)), int(m.group(2)), int(m.group(3)), 
+        self.sinks.append(Sink(int(m.group(1)), int(m.group(2)), int(m.group(3)), 
                                    int(m.group(4)), int(m.group(5))))
     
     

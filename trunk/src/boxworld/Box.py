@@ -25,7 +25,7 @@ from threading import Thread
 from .Transport import Transport
 from .Geometry import Coord
 
-class Box:
+class Box(object):
 	'''
 	Box - a 3D slab of "air with something in".
 	A Box has (usually) 6 neighbors (up, down, left, right, front, back) and an Inbox for each neighbor.
@@ -182,9 +182,11 @@ class Box:
 									self.temperature_time_function(self.time)) * self.fnair * self.timedelta
 		
 		decay = 0.0	
+		print "processing sinks, td=", self.timedelta
 		for j in self.sink_list:
 			decay += j.compute(self.timedelta)
 	
+		print "Decay is: ", decay
 		# calculate a budget for current time step and set new concentration
 		self.terpene_concentration += emission + decay
 
