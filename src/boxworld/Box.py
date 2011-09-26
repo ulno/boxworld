@@ -182,11 +182,9 @@ class Box(object):
 									self.temperature_time_function(self.time)) * self.fnair * self.timedelta
 		
 		decay = 0.0	
-		print "processing sinks, td=", self.timedelta
 		for j in self.sink_list:
 			decay += j.compute(self.timedelta)
 	
-		print "Decay is: ", decay
 		# calculate a budget for current time step and set new concentration
 		self.terpene_concentration += emission + decay
 

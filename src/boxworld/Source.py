@@ -22,7 +22,7 @@ class Source(object):
 	Terpene emission source
 	'''
 	
-	__slots__ = ['light', 'temperature', 'baseEmission', 'emission']
+	#__slots__ = ['light', 'temperature', 'baseEmission', 'emission']
 	
 	def __init__(self, light, temperature, baseEmission):
 		self.light       = light		# actual light flux in mumol m-2 s-1
