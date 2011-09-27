@@ -5,7 +5,7 @@
 #
 # Author: Steffen M. Noe (steffen.noe@emu.ee)
 # 
-# last revision: 04.03.2011
+# last revision: 27.09.2011
 #
 
 # 
@@ -61,9 +61,8 @@ class Sink(object):
 		Calculate the decay rate of the sink according to the current time interval and store the new
 		value of the terpene concentration locally
 		'''
-		return self.terpene_concentration * \
-			np.exp((- self.Knox(self.temperature)*self.nox 
-				    - self.Ko3(self.temperature)*self.ozone 
-				    - self.Koh(self.temperature)*self.oh) * time)
+		return -( self.Knox(self.temperature)*self.nox + 
+				self.Ko3(self.temperature)*self.ozone + 
+				self.Koh(self.temperature)*self.oh ) * self.terpene_concentration * time
 		
 	
