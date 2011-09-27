@@ -4,14 +4,15 @@ sourcesinktest.py
 test for the playing together of the source and sink with conversion of units.
 source releases in ppb s-1, the "box", yet not explicit has molecules cm-3 and
 the sink uses molecules cm-3 s-1. 
-time step is chosen to be 10 s.
+time step is chosen to be 1.0 s. 
+THIS IS BECAUSE LARGE STEPS CAUSE THE SIMPLE SOLVER TO FAIL - THE SMALLER THE SMOOTHER!
 
-Created on 5.3.2011
+Created on 27.09.2011
 
 @author: steffen
 '''
 import Source as so
-import Chemical_Sink as cs
+import Sink as cs
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -24,27 +25,36 @@ fnair = nair * 1e-6 * 1e-9 * 1e-11
 #
 mtWeight = 136
 
-#smt = so.Source(1000,25,3.777)
-smt = so.Source(1000,25,1)
-csi = cs.Chemical_Sink(5.0,25,15*fnair,2*fnair,1e-4*fnair)
+# This set of initial values is giving a possible artificial daycourse as set by the sinus
+# curves given for light and temperature!
+#
+smt = so.Source(1000,25,30)
+csi = cs.Sink(5.0,25,15,2,1e-4)
 
-# generate 100 random ozone and nox data
+# generate 100 random ozone and nox data, simulate kind a change in atmosperic oxidation state
+#
 oz = np.random.rand(100) * 15
 no = np.random.rand(100) * 2
 
 # generate some sinus curved light and temperature day course
+#
 li = []
 vec = np.linspace(0.0,100.0,100)
 li = np.sin((vec/100)*np.pi) * 1500
-tp = np.sin((vec/100)*np.pi) * 35
+tp = np.sin((vec/100)*np.pi) * 25
 
 # timestep and calculation of terpene budget with source and sink 
-dt = 10
-terp =[5.0]
+#
+dt = 1.0
+terp =[1.0]
 for i in np.arange(100):
     csi.ozone = oz[i]
     csi.nox = no[i]
-    terp.append(terp[i] + (smt.guenther(li[i],tp[i])*fnair*dt - csi.compute(dt)))
+    csi.terpene_concentration = terp[i]
+    terp.append(terp[i] + (smt.guenther(li[i],tp[i])*fnair*dt + csi.compute(dt)))
+    # Ok, here we need to have a sum as the Sink is set to calculate the loss by applying 
+    # already a minus sign!
+
     
 plt.plot(terp)
 plt.xlabel("time")

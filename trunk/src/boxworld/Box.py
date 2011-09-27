@@ -5,7 +5,7 @@
 #
 # Author: Steffen M. Noe (steffen.noe@emu.ee)
 # 
-# last revision: 04.03.2011
+# last revision: 27.09.2011
 #
 
 #
@@ -48,7 +48,7 @@ class Box(object):
 		# scaling to convert ppbv to molecules per cube centimeter (m3)
 		#
 		self.nair = 101325 * 6.022e23 / (8.314 * (25 + 273.15))
-		self.fnair = self.nair * 1e-6 * 1e-9 * 1e-11 # adapted to get rid of large numbers for molecules!
+		self.fnair = self.nair * 1e-6 * 1e-9 #* 1e-11 # adapted to get rid of large numbers for molecules!
 
 		# Molecular weight of a monoterpene 
 		# 
@@ -187,7 +187,9 @@ class Box(object):
 	
 		# calculate a budget for current time step and set new concentration
 		self.terpene_concentration += emission + decay
-		
+		# DEBUG - comment out if not needed!
+		print self.terpene_concentration		
+
 		# tell the sinks the new concentration inside this box
 		for k in self.sink_list:
 			j.terpene_concentration = self.terpene_concentration
