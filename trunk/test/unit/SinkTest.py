@@ -6,6 +6,14 @@ from boxworld.Sink import Sink
 
 class SinkTest(unittest.TestCase):
     
+    def testCanonicalSingleStep(self):
+         
+        sink=Sink(25,15,2,1e-4)
+        delta = sink.compute(1,1)
+        
+        self.assertEqual(delta, -1.2318548715985602)
+
+
     def testCanonical(self):
         '''
         Test 1 box with 1 sink for 10 time steps.
@@ -19,11 +27,11 @@ class SinkTest(unittest.TestCase):
                   cube_length=1, 
                   light_time_function = lambda t : 1, #always return 1
                 temperature_time_function = lambda t : 1, #always return 1 
-                timedelta=1, 
+                timedelta=0.01, 
                 initial_time=0, 
-                end_time=10, 
-                initial_terpene=1, 
-                sinks=(Sink(1,25,15,2,1e-4),))
+                end_time=1.0, 
+                initial_terpene=100, 
+                sinks=(Sink(25,15,2,1e-4),))
         
         box.run().join()
         

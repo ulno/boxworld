@@ -28,8 +28,8 @@ mtWeight = 136
 # This set of initial values is giving a possible artificial daycourse as set by the sinus
 # curves given for light and temperature!
 #
-smt = so.Source(1000,25,30)
-csi = cs.Sink(5.0,25,15,2,1e-4)
+smt = so.Source(30) # smt = so.Source(1000,25,30)
+csi = cs.Sink(25,15,2,1e-4) # csi = cs.Sink(5.0,25,15,2,1e-4)
 
 # generate 100 random ozone and nox data, simulate kind a change in atmosperic oxidation state
 #
@@ -51,7 +51,7 @@ for i in np.arange(100):
     csi.ozone = oz[i]
     csi.nox = no[i]
     csi.terpene_concentration = terp[i]
-    terp.append(terp[i] + (smt.guenther(li[i],tp[i])*fnair*dt + csi.compute(dt)))
+    terp.append(terp[i] + (smt.guenther(li[i],tp[i])*fnair*dt + csi.compute(dt,terp[i])))
     # Ok, here we need to have a sum as the Sink is set to calculate the loss by applying 
     # already a minus sign!
 

@@ -28,9 +28,11 @@ class Sink(object):
 	'''
 	__slots__ = ['terpene_concentration', 'temperature', 'ozone', 'nox', 'oh']
 	
-	def __init__(self, terpene_concentration, temperature, ozone, nox, oh):
+	def __init__(self, 
+			#terpene_concentration, 
+		temperature, ozone, nox, oh):
 		
-		self.terpene_concentration = terpene_concentration
+		#self.terpene_concentration = terpene_concentration
 		self.temperature = temperature + 273.15 # convert celsius to Kelvin
 		self.ozone       = ozone
 		self.nox         = nox
@@ -42,27 +44,27 @@ class Sink(object):
 		'''
 		Reaction constant for the terpene - hydroxyl radical reaction
 		'''
-		return 1.2 * np.exp(444./temp) # 1.2e-11 * np.exp(444./temp) 
+		return 1.2 * np.exp(444./temp) # 1.2e-11 * np.exp(444./temp)  1.2 * np.exp(444./temp)
 	
 	def Ko3(self, temp):
 		'''
 		Reaction constant for the terpene - ozone reaction
 		'''
-		return 1.01e-4 * np.exp(-732./temp) # 1.01e-15 * np.exp(-732./temp)
+		return 1.01e-4 * np.exp(-732./temp) # 1.01e-15 * np.exp(-732./temp)  1.01e-4 * np.exp(-732./temp)
 	
 	def Knox(self, temp):
 		'''
 		Reaction canstant for the terpene - nitrate oxygen reaction
 		'''
-		return 1.19e-1 * np.exp(490./temp) # 1.19e-12 * np.exp(490./temp)
+		return 1.19e-1 * np.exp(490./temp) # 1.19e-12 * np.exp(490./temp)  1.19e-1 * np.exp(490./temp)
 	
-	def compute(self, time):
+	def compute(self, time, terpene_concentration):
 		'''
 		Calculate the decay rate of the sink according to the current time interval and store the new
 		value of the terpene concentration locally
 		'''
 		return -( self.Knox(self.temperature)*self.nox + 
 				self.Ko3(self.temperature)*self.ozone + 
-				self.Koh(self.temperature)*self.oh ) * self.terpene_concentration * time
+				self.Koh(self.temperature)*self.oh ) * terpene_concentration * time
 		
 	

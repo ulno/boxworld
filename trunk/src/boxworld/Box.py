@@ -45,10 +45,10 @@ class Box(object):
 		self.position = position
 		
 		self.terpene_concentration = initial_terpene
-		# scaling to convert ppbv to molecules per cube centimeter (m3)
+		# scaling to convert ppbv to molecules per cube meter (m3)
 		#
 		self.nair = 101325 * 6.022e23 / (8.314 * (25 + 273.15))
-		self.fnair = self.nair * 1e-6 * 1e-9 #* 1e-11 # adapted to get rid of large numbers for molecules!
+		self.fnair = self.nair * 1e-6 * 1e-9 # * 1e-11 # adapted to get rid of large numbers for molecules!
 
 		# Molecular weight of a monoterpene 
 		# 
@@ -178,21 +178,24 @@ class Box(object):
 
 		emission = 0.0
 		for i in self.sources_list:
-			emission += i.guenther(self.light_time_function(self.time),
-									self.temperature_time_function(self.time)) * self.fnair * self.timedelta
+			emission += i.getEmission(self.light_time_function(self.time),
+						  self.temperature_time_function(self.time),
+						  self.fnair,
+						  self.timedelta) 
 		
 		decay = 0.0	
 		for j in self.sink_list:
-			decay += j.compute(self.timedelta)
+			decay += j.compute(self.timedelta, self.terpene_concentration)
 	
 		# calculate a budget for current time step and set new concentration
 		self.terpene_concentration += emission + decay
+		self.terpene_concentration = max(0, self.terpene_concentration)
 		# DEBUG - comment out if not needed!
 		print self.terpene_concentration		
 
 		# tell the sinks the new concentration inside this box
-		for k in self.sink_list:
-			j.terpene_concentration = self.terpene_concentration
+		#for k in self.sink_list:
+		#	j.terpene_concentration = self.terpene_concentration
 
 
 	def compute(self):
